@@ -1,19 +1,37 @@
 import React, { useState } from 'react'
+import axios from 'axios'
 
 const ContactForm = () => {
+
   const [state, setState] = useState({
     name: '',
     email: '',
     subject: '',
     message: ''
-  });
+  })
 
-  // const sendEmail = event => {
-  //   event.preventDefault();
+  const [result, setResult] = useState(null)
 
-  //   console.log('We will fill this up shortly.');
-  //   // code to trigger Sending email
-  // };
+  const sendEmail = event => {
+    event.preventDefault()
+    axios
+      .post('/send', { ...state })
+      .then(response => {
+        setResult(response.data)
+        setState({
+          name: '',
+          email: '',
+          subject: '',
+          message: ''
+        })
+      })
+      .catch(() => {
+        setResult({
+          sucess: false,
+          message: 'Something went wrong. Try again later'
+        })
+      })
+  }
 
   const onInputChange = event => {
     const { name, value } = event.target;
@@ -31,6 +49,7 @@ const ContactForm = () => {
         <input 
           type="text"
           className="form-control"
+          value={state.name}
           placeholder="Full Name"
           onChange={onInputChange}
         />
@@ -40,6 +59,7 @@ const ContactForm = () => {
         <input 
           type="email" 
           className="form-control" 
+          value={state.email}
           placeholder="name@example.com"
           onChange={onInputChange}
         />
@@ -49,6 +69,7 @@ const ContactForm = () => {
         <input
           type="text"
           className="form-control"
+          value={state.subject}
           placeholder="Subject"
           onChange={onInputChange}
         />
@@ -57,8 +78,9 @@ const ContactForm = () => {
         <label>Message:</label>
         <textarea 
           className="form-control"
-          placeholder="Message" 
+          value={state.message}
           rows="3"
+          placeholder="Message" 
           onChange={onInputChange}
         />
       </div>
